@@ -1,0 +1,14 @@
+<ruleset name="PSR2">
+<description>The PSR2 coding standard.</description>
+<rule ref="PSR2"/>
+<file>app/</file>
+<!--  <file>routes/</file>  -->
+<exclude-pattern>vendor</exclude-pattern>
+<exclude-pattern>routes/</exclude-pattern>
+<exclude-pattern>resources</exclude-pattern>
+<exclude-pattern>storage/</exclude-pattern>
+<exclude-pattern>node_modules/</exclude-pattern>
+<rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+<exclude-pattern>database/</exclude-pattern>
+</rule>
+</ruleset>
