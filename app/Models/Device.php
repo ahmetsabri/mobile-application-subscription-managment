@@ -10,24 +10,16 @@ class Device extends Model
 {
     use HasFactory;
 
-    // protected $primaryKey = 'uid';
-
-    // protected $keyType = 'string';
-
-    // public $incrementing = false;
-
     protected $fillable = ['uid', 'app_id', 'language', 'os'];
 
-
-
-    public function tokens()
+    public function token()
     {
-        return $this->hasMany(ClientToken::class);
+        return $this->hasOne(ClientToken::class);
     }
 
     public function generateToken()
     {
-        return $this->tokens()->firstOrCreate(['token'=>$this->hashToken()]);
+        return $this->token()->firstOrCreate(['token'=>$this->hashToken()]);
     }
 
     public function getToken()

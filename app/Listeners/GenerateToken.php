@@ -12,8 +12,7 @@ class GenerateToken implements ShouldQueue
     public function handle(DeviceRegistered $event)
     {
         $device = $event->getDevice();
-        $one_day = 60 * 60 * 24;
-        Cache::remember("{$device->hashToken()}", $one_day, function () use ($device) {
+        Cache::rememberForever("{$device->hashToken()}", function () use ($device) {
             return $device->generateToken()->token;
         });
     }

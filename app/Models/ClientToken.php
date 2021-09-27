@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class ClientToken extends Model
 {
     use HasFactory;
+
     protected $fillable = ['token', 'device_uid'];
+
+    protected $with = ['device'];
 
     public function device()
     {

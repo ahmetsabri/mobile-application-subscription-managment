@@ -15,7 +15,7 @@ class CreateClientTokensTable extends Migration
     {
         Schema::create('client_tokens', function (Blueprint $table) {
             $table->id();
-            $table->string('token');
+            $table->string('token')->unique()->index();
             $table->string('device_id')->constrained('devices')->cascadeOnDelete();
             $table->timestamps();
         });

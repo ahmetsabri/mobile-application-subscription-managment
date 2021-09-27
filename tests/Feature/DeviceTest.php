@@ -17,6 +17,6 @@ class DeviceTest extends TestCase
             'app_id' => Str::random(5),
             'language' => 'Turkish',
             'os' => 'ios'
-        ])->dump()->assertOk();
+        ])->assertOk();
     }
 }
