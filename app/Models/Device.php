@@ -24,7 +24,7 @@ class Device extends Model
 
     public function getToken()
     {
-        return Cache::get($this->hashToken());
+        return Cache::get($this->hashToken())->token;
     }
 
     public function hashToken()

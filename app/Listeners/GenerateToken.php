@@ -13,7 +13,7 @@ class GenerateToken implements ShouldQueue
     {
         $device = $event->getDevice();
         Cache::rememberForever("{$device->hashToken()}", function () use ($device) {
-            return $device->generateToken()->token;
+            return $device->generateToken()->load('device');
         });
     }
 }
