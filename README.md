@@ -1,3 +1,3 @@
 Interesting Features: 
-## testing
+## Testing
 ## Github actions
