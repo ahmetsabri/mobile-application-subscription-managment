@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Device;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -15,7 +18,7 @@ class DeviceTest extends TestCase
         $this->postJson('/api/register', [
             'uid' => Str::random(10),
             'app_id' => Str::random(5),
-            'language' => 'Turkish',
+            'language' => 'ees',
             'os' => 'ios'
         ])->assertOk();
     }

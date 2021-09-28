@@ -2,11 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Jobs\UpdateApplicationStatistics;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Cache;
 
-class InAppPurchaseRepository
+class SubscriptionRepository
 {
     public array $recipt_data;
     public string $token;
@@ -42,7 +41,7 @@ class InAppPurchaseRepository
                 : null;
     }
 
-    private function createSubscription(Subscription $subscription)
+    private function createSubscription(Subscription $subscription): Subscription
     {
         $subscription->fill([
             'status' => 'started',
@@ -52,11 +51,12 @@ class InAppPurchaseRepository
         ]);
 
         $subscription->save();
-        UpdateApplicationStatistics::dispatch($this->getAppId(), 'started');
+        $this->setSubscriptionCahce($subscription);
+
         return $subscription;
     }
 
-    private function renewSubscription(Subscription $subscription)
+    private function renewSubscription(Subscription $subscription): Subscription
     {
         $subscription->update([
             'status' => 'renewed',
@@ -64,11 +64,14 @@ class InAppPurchaseRepository
             'valid_until' => $this->recipt_data['expire_at'],
             'canceld_at' => null
            ]);
-        UpdateApplicationStatistics::dispatch($this->getAppId(), 'renewed');
-        return $subscription->refresh();
+
+        $changes = $subscription->refresh();
+        $this->setSubscriptionCahce($changes);
+
+        return $changes;
     }
 
-    private function cancelSubscription(Subscription $subscription)
+    private function cancelSubscription(Subscription $subscription): Subscription
     {
         $subscription->update(
             [
@@ -78,13 +81,19 @@ class InAppPurchaseRepository
             ]
         );
 
-        UpdateApplicationStatistics::dispatch($this->getAppId(), 'canceled');
-        return $subscription->refresh();
+        $changes = $subscription->refresh();
+        $this->setSubscriptionCahce($changes);
+
+        return $changes;
     }
 
     private function getAppId(): string
     {
-        // dd(app()->environment() == 'testing');
-        return app()->environment() == 'testing' ? 'testng' : Cache::get($this->token)->device->app_id;
+        return Cache::get($this->token)->device->app_id;
+    }
+
+    private function setSubscriptionCahce(?Subscription $subscription): void
+    {
+        $subscription->setSubscriptionCahce($this->token);
     }
 }

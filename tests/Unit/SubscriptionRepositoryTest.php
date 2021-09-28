@@ -1,19 +1,18 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit;
 
 use App\Models\Device;
 use App\Models\Subscription;
-use App\Repositories\InAppPurchaseRepository;
+use App\Repositories\SubscriptionRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 use Tests\TestCase;
 
-class InAppPruchaseRepoTest extends TestCase
+class SubscriptionRepositoryTest extends TestCase
 {
     use RefreshDatabase;
-    private InAppPurchaseRepository $in_app_pruchase_reposiyory ;
+    private SubscriptionRepository $subscription_repository ;
     private Device $device;
     private array $invalid_recipt;
     private array $valid_recipt;
@@ -24,7 +23,11 @@ class InAppPruchaseRepoTest extends TestCase
 
         $this->device = Device::factory()->create(['os'=>'ios'])->load('token');
         $this->token = $this->device->token->token;
-        $this->in_app_pruchase_reposiyory = new InAppPurchaseRepository($this->token);
+        Cache::remember($this->token, 3600, function () {
+            return $this->device->token;
+        });
+
+        $this->subscription_repository = new SubscriptionRepository($this->token);
         $this->valid_recipt = [
             'status' => true,
             'expire_at' => now()->addMonth(),
@@ -38,7 +41,7 @@ class InAppPruchaseRepoTest extends TestCase
     public function testPruchaseFirstTime()
     {
         $this->assertEquals(0, Subscription::count());
-        $this->in_app_pruchase_reposiyory->updateOrCreateSubscription($this->valid_recipt);
+        $this->subscription_repository->updateOrCreateSubscription($this->valid_recipt);
 
         $this->assertDatabaseHas(
             'subscriptions',
@@ -57,7 +60,7 @@ class InAppPruchaseRepoTest extends TestCase
             'token'=>$this->token
             ]
         );
-        $this->in_app_pruchase_reposiyory->updateOrCreateSubscription($this->valid_recipt);
+        $this->subscription_repository->updateOrCreateSubscription($this->valid_recipt);
         $this->assertEquals(1, Subscription::count());
 
         $this->assertDatabaseHas(
@@ -78,7 +81,7 @@ class InAppPruchaseRepoTest extends TestCase
 
         $this->assertEquals(1, Subscription::count());
 
-        $this->in_app_pruchase_reposiyory->updateOrCreateSubscription($this->invalid_recipt);
+        $this->subscription_repository->updateOrCreateSubscription($this->invalid_recipt);
 
         $this->assertEquals(1, Subscription::count());
 
@@ -89,5 +92,7 @@ class InAppPruchaseRepoTest extends TestCase
                 'status' => 'canceled'
             ]
         );
+        $response = $this->getJson("/api/check-subscription?client_token={$this->token}")->assertOk();
+        $response->assertJsonPath('status', 'canceled');
     }
 }

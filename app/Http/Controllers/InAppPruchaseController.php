@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Payment\InAppPruchaseRequest;
-use App\Repositories\InAppPurchaseRepository;
+use App\Repositories\SubscriptionRepository;
 use App\Services\InAppPruchase;
 use Illuminate\Http\Request;
 

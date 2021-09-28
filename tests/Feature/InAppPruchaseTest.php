@@ -3,17 +3,16 @@
 namespace Tests\Feature;
 
 use App\Models\Device;
-use App\Models\Subscription;
-use App\Repositories\InAppPurchaseRepository;
+use App\Repositories\SubscriptionRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class InAppPruchaseTest extends TestCase
 {
     use RefreshDatabase;
 
-    private $in_app_pruchase_reposiyory ;
+    private $subscription_repository ;
     private Device $device;
     public function setUp(): void
     {
@@ -21,7 +20,12 @@ class InAppPruchaseTest extends TestCase
 
         $this->device = Device::factory()->create(['os'=>'ios'])->load('token');
         $this->token = $this->device->token->token;
-        $this->in_app_pruchase_reposiyory = new InAppPurchaseRepository($this->token);
+
+        Cache::remember($this->token, 3600, function () {
+            return $this->device->token;
+        });
+
+        $this->subscription_repository = new SubscriptionRepository($this->token);
     }
 
     public function testPruchase()
