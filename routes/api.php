@@ -8,5 +8,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('register', [DeviceController::class, 'register']);
 Route::get('pruchase', [InAppPruchaseController::class, 'pruchase']);
-Route::get('check-recipt', [ReciptController::class, 'checkRecipt']);
 Route::get('check-subscription', SubscriptionController::class);
